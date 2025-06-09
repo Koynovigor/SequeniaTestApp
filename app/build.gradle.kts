@@ -1,11 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.plugin)
 }
 
 android {
     namespace = "com.l3on1kl.sequeniatestapp"
     compileSdk = 35
+
+    buildFeatures {
+        compose = true
+    }
 
     defaultConfig {
         applicationId = "com.l3on1kl.sequeniatestapp"
@@ -42,6 +47,23 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(platform(libs.compose.bom))
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+
+    implementation(libs.koin.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
+    implementation(libs.coil.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

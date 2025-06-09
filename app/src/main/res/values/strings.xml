@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Sequenia</string>
+    <string name="genres_title">Жанры</string>
+    <string name="films_title">Фильмы</string>
+    <string name="genres">Жанры: %1$s</string>
+    <string name="rating">Рейтинг: %1$s</string>
+    <string name="all">Все</string>
 </resources>
