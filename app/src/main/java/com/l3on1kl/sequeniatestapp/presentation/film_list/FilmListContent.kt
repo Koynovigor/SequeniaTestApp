@@ -39,7 +39,10 @@ import com.l3on1kl.sequeniatestapp.R
 import com.l3on1kl.sequeniatestapp.domain.model.FilmEntity
 
 @Composable
-fun FilmListContent(viewModel: FilmListViewModel) {
+fun FilmListContent(
+    viewModel: FilmListViewModel,
+    onFilmClick: (Int) -> Unit
+) {
     val uiState = viewModel.uiState.collectAsState()
     val selectedGenre by viewModel.selectedGenre.collectAsState()
     val filtered by viewModel.filteredFilms.collectAsState()
@@ -116,7 +119,11 @@ fun FilmListContent(viewModel: FilmListViewModel) {
                         end = if (isLast) 16.dp else 0.dp
                     )
 
-                    FilmCard(film, modifier = cardModifier)
+                    FilmCard(
+                        film,
+                        modifier = cardModifier,
+                        onClick = { onFilmClick(film.id) }
+                    )
                 }
             }
         }
@@ -137,12 +144,14 @@ fun FilmListContent(viewModel: FilmListViewModel) {
 @Composable
 fun FilmCard(
     film: FilmEntity,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(0.6f),
+            .aspectRatio(0.6f)
+            .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(R.color.colorBackground)
         )
@@ -160,7 +169,7 @@ fun FilmCard(
                 error = painterResource(R.drawable.ic_placeholder),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(4.dp))
                     .weight(1f)
             )
             Text(

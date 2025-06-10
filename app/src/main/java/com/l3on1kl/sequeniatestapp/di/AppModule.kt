@@ -3,6 +3,7 @@ package com.l3on1kl.sequeniatestapp.di
 import com.l3on1kl.sequeniatestapp.data.remote.ApiService
 import com.l3on1kl.sequeniatestapp.domain.repository.FilmRepository
 import com.l3on1kl.sequeniatestapp.domain.repository.FilmRepositoryImpl
+import com.l3on1kl.sequeniatestapp.presentation.film_detail.FilmDetailViewModel
 import com.l3on1kl.sequeniatestapp.presentation.film_list.FilmListViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -27,5 +28,9 @@ val appModule = module {
 
     viewModel {
         FilmListViewModel(get())
+    }
+
+    viewModel {
+        FilmDetailViewModel(get())
     }
 }

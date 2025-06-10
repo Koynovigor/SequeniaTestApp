@@ -5,4 +5,7 @@
     <string name="genres">Жанры: %1$s</string>
     <string name="rating">Рейтинг: %1$s</string>
     <string name="all">Все</string>
+    <string name="film_detail_title">Название</string>
+    <string name="name_metrics">КиноПоиск</string>
+    <string name="year">год</string>
 </resources>

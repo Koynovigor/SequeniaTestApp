@@ -22,4 +22,7 @@ class FilmRepositoryImpl(
             )
         }
     }
+
+    override suspend fun getFilmById(id: Int): FilmEntity =
+        getFilms().first { it.id == id }
 }

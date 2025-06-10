@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.l3on1kl.sequeniatestapp.R
@@ -72,6 +73,16 @@ fun SequeniaTheme(
         labelLarge = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp
+        ),
+        displayLarge = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold
+        ),
+        displayMedium = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
         )
     )
 
