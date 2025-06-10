@@ -1,20 +1,16 @@
 package com.l3on1kl.sequeniatestapp.presentation.film_detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,21 +29,50 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.l3on1kl.sequeniatestapp.R
 import com.l3on1kl.sequeniatestapp.domain.model.FilmEntity
+import com.l3on1kl.sequeniatestapp.ui.utils.ErrorBanner
 import java.util.Locale
 
 @Composable
 fun FilmDetailContent(viewModel: FilmDetailViewModel) {
     val uiState by viewModel.uiState.collectAsState()
 
-    when (val state = uiState) {
-        FilmDetailUiState.Loading -> Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) { CircularProgressIndicator() }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.colorBackground))
+    ) {
+        when (val state = uiState) {
+            FilmDetailUiState.Loading ->
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorResource(R.color.colorBackground))
+                ) {
+                    CircularProgressIndicator(
+                        color = colorResource(R.color.colorPrimaryContainer)
+                    )
+                }
 
-        is FilmDetailUiState.Error -> ErrorStub(onRetry = { /* TODO retry*/ })
+            is FilmDetailUiState.Success -> FilmDetail(state.film)
 
-        is FilmDetailUiState.Success -> FilmDetail(state.film)
+            is FilmDetailUiState.Error -> FilmDetailPlaceholder()
+        }
+
+        if (uiState is FilmDetailUiState.Error) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(8.dp)
+                    .background(colorResource(R.color.colorBackground))
+            ) {
+                ErrorBanner(
+                    message = stringResource(R.string.error_network_message),
+                    actionText = stringResource(R.string.retry).uppercase(),
+                    onAction = { viewModel.retry() }
+                )
+            }
+        }
     }
 }
 
@@ -164,16 +189,10 @@ private fun GenresRow(
 }
 
 @Composable
-private fun ErrorStub(onRetry: () -> Unit) {
-    Column(
-        Modifier
+private fun FilmDetailPlaceholder() {
+    Box(
+        modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Что-то пошло не так…")
-        Spacer(Modifier.height(8.dp))
-        Button(onClick = onRetry) { Text("Повторить") }
-    }
+            .background(colorResource(R.color.colorBackground))
+    )
 }

@@ -43,6 +43,7 @@ class FilmListViewModel(
 
     private fun loadFilms() {
         viewModelScope.launch {
+            _uiState.value = FilmListUiState.Loading
             try {
                 val films = filmRepository.getFilms()
                 _allFilms.value = films.sortedBy { it.localizedName }
@@ -59,5 +60,9 @@ class FilmListViewModel(
                 _uiState.value = FilmListUiState.Error(e.localizedMessage ?: "Unknown error")
             }
         }
+    }
+
+    fun retry() {
+        loadFilms()
     }
 }

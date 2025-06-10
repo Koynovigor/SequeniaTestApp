@@ -15,7 +15,10 @@ class FilmDetailViewModel(
     private val _uiState = MutableStateFlow<FilmDetailUiState>(FilmDetailUiState.Loading)
     val uiState: StateFlow<FilmDetailUiState> = _uiState.asStateFlow()
 
+    private var lastLoadedFilmId: Int? = null
+
     fun loadFilm(id: Int) {
+        lastLoadedFilmId = id
         viewModelScope.launch {
             _uiState.value = FilmDetailUiState.Loading
             try {
@@ -25,5 +28,9 @@ class FilmDetailViewModel(
                 _uiState.value = FilmDetailUiState.Error(e)
             }
         }
+    }
+
+    fun retry() {
+        lastLoadedFilmId?.let { loadFilm(it) }
     }
 }
