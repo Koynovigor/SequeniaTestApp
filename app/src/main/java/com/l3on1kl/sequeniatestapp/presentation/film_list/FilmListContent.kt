@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.l3on1kl.sequeniatestapp.R
 import com.l3on1kl.sequeniatestapp.domain.model.FilmEntity
+import com.l3on1kl.sequeniatestapp.ui.utils.ErrorBanner
 
 @Composable
 fun FilmListContent(
@@ -47,96 +48,129 @@ fun FilmListContent(
     val selectedGenre by viewModel.selectedGenre.collectAsState()
     val filtered by viewModel.filteredFilms.collectAsState()
 
-    val spanCount = 2
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 56.dp)
+            .background(colorResource(R.color.colorBackground)),
+        contentAlignment = Alignment.Center
+    ) {
+        when (val state = uiState.value) {
+            is FilmListUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .background(colorResource(R.color.colorBackground)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = colorResource(R.color.colorPrimaryContainer)
+                    )
+                }
+            }
 
-    when (val state = uiState.value) {
-        is FilmListUiState.Loading -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+            is FilmListUiState.Content -> {
+                val genres = state.genres
+                FilmList(
+                    viewModel = viewModel,
+                    genres = genres,
+                    selectedGenre = selectedGenre,
+                    filtered = filtered,
+                    spanCount = 2,
+                    onFilmClick = onFilmClick
+                )
+            }
+
+            is FilmListUiState.Error -> {
+                FilmListPlaceholder()
             }
         }
 
-        is FilmListUiState.Content -> {
-            val content = uiState.value as FilmListUiState.Content
-            val genres = content.genres
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+        if (uiState.value is FilmListUiState.Error) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 56.dp)
-                    .background(colorResource(R.color.colorBackground)),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .align(Alignment.BottomCenter)
+                    .padding(8.dp)
+                    .background(colorResource(R.color.colorBackground))
             ) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.genres_title),
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                            modifier = Modifier.padding(
-                                top = 16.dp,
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = 10.dp
-                            )
-                        )
+                ErrorBanner(
+                    message = stringResource(R.string.error_network_message),
+                    actionText = stringResource(R.string.retry).uppercase(),
+                    onAction = { viewModel.retry() }
+                )
+            }
+        }
+    }
+}
 
-                        genres.forEach { genre ->
-                            GenreRow(
-                                genre = genre,
-                                selected = genre == selectedGenre,
-                                onClick = { viewModel.onGenreSelected(genre.takeIf { it != selectedGenre }) }
-                            )
-                        }
-                    }
-                }
-
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = stringResource(R.string.films_title),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.padding(horizontal = 16.dp)
+@Composable
+fun FilmList(
+    viewModel: FilmListViewModel,
+    genres: List<String>,
+    selectedGenre: String?,
+    filtered: List<FilmEntity>,
+    spanCount: Int,
+    onFilmClick: (Int) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.colorBackground)),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Column {
+                Text(
+                    text = stringResource(R.string.genres_title),
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(
+                        top = 16.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 10.dp
                     )
-                }
+                )
 
-                itemsIndexed(
-                    items = filtered,
-                    key = { _, film -> film.id }
-                ) { index, film ->
-
-                    val col = index % spanCount
-                    val isFirst = col == 0
-                    val isLast = col == spanCount - 1
-
-                    val cardModifier = Modifier.padding(
-                        start = if (isFirst) 16.dp else 0.dp,
-                        end = if (isLast) 16.dp else 0.dp
-                    )
-
-                    FilmCard(
-                        film,
-                        modifier = cardModifier,
-                        onClick = { onFilmClick(film.id) }
+                genres.forEach { genre ->
+                    GenreRow(
+                        genre = genre,
+                        selected = genre == selectedGenre,
+                        onClick = { viewModel.onGenreSelected(genre.takeIf { it != selectedGenre }) }
                     )
                 }
             }
         }
 
-        is FilmListUiState.Error -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Error: ${state.message}")
-            }
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Text(
+                text = stringResource(R.string.films_title),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
+        itemsIndexed(
+            items = filtered,
+            key = { _, film -> film.id }
+        ) { index, film ->
+
+            val col = index % spanCount
+            val isFirst = col == 0
+            val isLast = col == spanCount - 1
+
+            val cardModifier = Modifier.padding(
+                start = if (isFirst) 16.dp else 0.dp,
+                end = if (isLast) 16.dp else 0.dp
+            )
+
+            FilmCard(
+                film,
+                modifier = cardModifier,
+                onClick = { onFilmClick(film.id) }
+            )
         }
     }
 }
@@ -207,4 +241,13 @@ private fun GenreRow(
             color = colorResource(R.color.colorOnPrimaryContainer)
         )
     }
+}
+
+@Composable
+private fun FilmListPlaceholder() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.colorBackground))
+    )
 }

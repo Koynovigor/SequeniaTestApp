@@ -9,5 +9,6 @@
     <color name="colorOnSurface">#CBCBCB</color>
 
     <color name="grayText">#4B4B4B</color>
+    <color name="errorContainer">#232323</color>
 
 </resources>
