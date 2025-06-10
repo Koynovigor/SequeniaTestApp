@@ -8,4 +8,6 @@
     <string name="film_detail_title">Название</string>
     <string name="name_metrics">КиноПоиск</string>
     <string name="year">год</string>
+    <string name="error_network_message">Ошибка подключения сети</string>
+    <string name="retry">Повторить</string>
 </resources>
